@@ -1,13 +1,8 @@
-from django.db.migrations import serializer
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.contrib.auth.models import User
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Book, Category
-from rest_framework import serializers, status
-from book.serializers import BookSerializer,CategorySerializer
+from rest_framework import  status
+from book.serializers import BookSerializer, CategorySerializer
 
 # def index(request):
 #     data = {
@@ -116,3 +111,4 @@ class CategoryDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Category.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
