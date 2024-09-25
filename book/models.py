@@ -47,7 +47,7 @@ class Product(BaseModel):
 
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    price = models.FloatField(null=True, blank=True)  # 345.24 $
+    price = models.FloatField(null=True, blank=True)
     image = models.ImageField(upload_to='products', null=True, blank=True)
     category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='products')
     group = models.ForeignKey('Group', on_delete=models.CASCADE, related_name='products')
