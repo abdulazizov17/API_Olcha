@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from olcha.models import Category, Group, Product, Image,Comment
+from olcha.models import Category, Group, Product, Image,Comment,AttributeKey,AttributeValue,ProductAttribute
 from django.db.models import Avg
 
 
@@ -78,6 +78,25 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+class AttributeKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AttributeKey
+        fields = ['id', 'key_name']
+
+class AttributeValueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AttributeValue
+        fields = ['id', 'key_value']
+
+class ProductAttributeSerializer(serializers.ModelSerializer):
+    attr_key = AttributeKeySerializer()
+    attr_value = AttributeValueSerializer()
+    product = serializers.StringRelatedField()
+
+    class Meta:
+        model = ProductAttribute
+        fields = ['id', 'attr_key', 'attr_value', 'product']
 
 
 
