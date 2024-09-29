@@ -1,4 +1,4 @@
-
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import ListCreateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -8,6 +8,7 @@ from olcha.serializers import ProductSerializer, ImageSerializer
 
 class ProductListApiView(ListCreateAPIView):
     permission_classes = [IsAuthenticated,]
+    authentication_classes = [BasicAuthentication]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
