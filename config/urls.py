@@ -7,6 +7,8 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from django.urls import include, path
+from debug_toolbar.toolbar import debug_toolbar_urls
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
@@ -17,4 +19,6 @@ urlpatterns = [
                   path('user/', include('user.urls')),
                   path('api/token/access/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
                   path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                  path('post/', include('post.urls')),
+
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + debug_toolbar_urls()
