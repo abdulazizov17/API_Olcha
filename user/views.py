@@ -1,10 +1,10 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -66,3 +66,21 @@ class RegisterApiView(APIView):
             'created': created,
         }
         return Response(response, status=status.HTTP_201_CREATED)
+
+from django.core.cache import cache
+from rest_framework.generics import ListAPIView
+from user.serializers import UserSerializer
+
+class UserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        cache_key = 'user-list'
+        cached_data = cache.get(cache_key)
+        if not cached_data:
+            queryset = User.objects.all().select_related('profile')
+            cache.set(cache_key, queryset, timeout=60 * 3)
+            return queryset
+        return cached_data

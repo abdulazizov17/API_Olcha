@@ -21,4 +21,6 @@ urlpatterns = [
                   path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
                   path('post/', include('post.urls')),
 
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + debug_toolbar_urls()
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += debug_toolbar_urls()
+

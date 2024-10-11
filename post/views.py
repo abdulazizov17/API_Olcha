@@ -1,26 +1,44 @@
 
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from django.utils import cache
+from rest_framework import viewsets
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.permissions import (
-    IsAuthenticated,
-    AllowAny,
-    IsAuthenticatedOrReadOnly,
-    IsAdminUser
+    AllowAny
 )
+from django.core.cache import cache
 
 from post.models import Post
+from post.permissions import IsAnnaPermission
 from post.serializers import PostSerializer
-from post.permissions import MyIsAuthenticated, IsAnnaPermission
 
 
+# Create your views here.
 
-class PostListView(ListCreateAPIView):
-    queryset = Post.objects.select_related('user').only('id', 'title', 'created', 'user__username').all()
+class PostListView(ListAPIView):
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [MyIsAuthenticated]
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        cache_key = 'post-list'
+        cached_data = cache.get(cache_key)
+        if not cached_data:
+            queryset = Post.objects.all().select_related('user')
+            queryset = queryset.prefetch_related('user__groups')
+            queryset = queryset.prefetch_related('user__user_permissions')
+            cache.set(cache_key, queryset, timeout=60 * 3)
+            return queryset
+        return cached_data
 
 
 class PostDetailApiView(RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.select_related('user').only('id', 'title', 'description', 'created', 'user__username').all()
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAnnaPermission]
     lookup_field = 'pk'
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [AllowAny]

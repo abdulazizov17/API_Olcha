@@ -32,3 +32,4 @@ class IsAnnaPermission(permissions.BasePermission):
 
         return obj.user == request.user
 
+# Django Rest Pagination
